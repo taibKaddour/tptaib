@@ -1,0 +1,64 @@
+<div class="list-suggestion-container">
+  <h2>📋 Liste des Suggestions</h2>
+
+  <div class="search-bar">
+    <input 
+      type="text" 
+      [(ngModel)]="searchText" 
+      placeholder="🔍 Rechercher par titre ou catégorie..."
+      class="search-input">
+  </div>
+
+  <div class="suggestions-grid">
+    <div *ngFor="let suggestion of filteredSuggestions" class="suggestion-card">
+      
+      <div class="card-header" [class]="getStatusClass(suggestion.status)">
+        <span class="status-badge">{{ getStatusLabel(suggestion.status) }}</span>
+      </div>
+
+      <div class="card-body">
+        <h3>{{ suggestion.title }}</h3>
+        <p class="description">{{ suggestion.description }}</p>
+        
+        <div class="card-meta">
+          <span class="category">📁 {{ suggestion.category }}</span>
+          <span class="date">📅 {{ suggestion.date | date:'dd/MM/yyyy' }}</span>
+        </div>
+
+        <div class="likes-section">
+          <span class="likes-count">❤️ {{ suggestion.nbLikes }} like(s)</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <!-- Bouton Details ajouté -->
+        <button class="btn btn-details" (click)="viewDetails(suggestion.id)">
+          🔍 Détails
+        </button>
+        
+        <div *ngIf="suggestion.status !== 'refusee'" class="action-buttons">
+          <button class="btn btn-like" (click)="incrementLikes(suggestion)">
+            👍 Like
+          </button>
+          <button class="btn btn-favorite" (click)="addToFavorites(suggestion)">
+            ⭐ Favoris
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="filteredSuggestions.length === 0" class="no-results">
+    <p>Aucune suggestion trouvée pour "{{ searchText }}"</p>
+  </div>
+
+  <div class="favorites-section" *ngIf="favorites.length > 0">
+    <h3>⭐ Mes Favoris ({{ favorites.length }})</h3>
+    <div class="favorites-list">
+      <div *ngFor="let fav of favorites" class="favorite-item">
+        <span>{{ fav.title }}</span>
+        <span class="favorite-category">{{ fav.category }}</span>
+      </div>
+    </div>
+  </div>
+</div>
