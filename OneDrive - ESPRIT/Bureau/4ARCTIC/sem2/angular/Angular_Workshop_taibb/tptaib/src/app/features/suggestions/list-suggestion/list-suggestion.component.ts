@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Suggestion } from '../../../models/suggestion';
 import { Router } from '@angular/router';
+import { SuggestionService } from '../../../services/suggestion.service';
 
 @Component({
   selector: 'app-list-suggestion',
@@ -8,49 +9,18 @@ import { Router } from '@angular/router';
   styleUrls: ['./list-suggestion.component.css']
 })
 export class ListSuggestionComponent {
-  suggestions: Suggestion[] = [
-    {
-      id: 1,
-      title: 'Organiser une journée team building',
-      description: 'Suggestion pour organiser une journée de team building pour renforcer les liens entre les membres de l\'équipe.',
-      category: 'Événements',
-      date: new Date('2025-01-20'),
-      status: 'acceptee',
-      nbLikes: 10
-    },
-    {
-      id: 2,
-      title: 'Améliorer le système de réservation',
-      description: 'Proposition pour améliorer la gestion des réservations en ligne avec un système de confirmation automatique.',
-      category: 'Technologie',
-      date: new Date('2025-01-15'),
-      status: 'refusee',
-      nbLikes: 0
-    },
-    {
-      id: 3,
-      title: 'Créer un système de récompenses',
-      description: 'Mise en place d\'un programme de récompenses pour motiver les employés et reconnaître leurs efforts.',
-      category: 'Ressources Humaines',
-      date: new Date('2025-01-25'),
-      status: 'refusee',
-      nbLikes: 0
-    },
-    {
-      id: 4,
-      title: 'Moderniser l\'interface utilisateur',
-      description: 'Refonte complète de l\'interface utilisateur pour une meilleure expérience utilisateur.',
-      category: 'Technologie',
-      date: new Date('2025-01-30'),
-      status: 'en_attente',
-      nbLikes: 0
-    }
-  ];
 
   favorites: Suggestion[] = [];
   searchText: string = '';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    public suggestionService: SuggestionService
+  ) {}
+
+  get suggestions(): Suggestion[] {
+    return this.suggestionService.getSuggestions();
+  }
 
   incrementLikes(suggestion: Suggestion): void {
     suggestion.nbLikes++;
@@ -65,7 +35,10 @@ export class ListSuggestionComponent {
     }
   }
 
-  // Navigation vers les détails
+  goToForm(): void {
+    this.router.navigate(['/suggestions/add']);
+  }
+
   viewDetails(id: number): void {
     this.router.navigate(['/suggestions', id]);
   }

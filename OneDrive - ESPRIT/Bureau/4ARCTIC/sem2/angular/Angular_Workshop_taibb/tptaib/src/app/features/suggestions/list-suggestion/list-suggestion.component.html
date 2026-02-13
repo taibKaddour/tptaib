@@ -8,8 +8,9 @@
       placeholder="🔍 Rechercher par titre ou catégorie..."
       class="search-input">
   </div>
-
-  <div class="suggestions-grid">
+<button class="btn-add" (click)="goToForm()">
+  + Ajouter suggestion
+</button>  <div class="suggestions-grid">
     <div *ngFor="let suggestion of filteredSuggestions" class="suggestion-card">
       
       <div class="card-header" [class]="getStatusClass(suggestion.status)">
