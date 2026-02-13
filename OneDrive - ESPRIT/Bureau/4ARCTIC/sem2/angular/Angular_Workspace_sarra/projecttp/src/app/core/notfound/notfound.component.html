@@ -1,0 +1,35 @@
+<div class="notfound-container">
+  <div class="notfound-content">
+    <div class="error-animation">
+      <div class="error-number">4</div>
+      <div class="error-icon">🔍</div>
+      <div class="error-number">4</div>
+    </div>
+    
+    <h1 class="error-title">Page non trouvée</h1>
+    
+    <p class="error-message">
+      Oups ! La page que vous recherchez semble avoir disparu dans l'univers digital.
+    </p>
+    
+    <div class="error-suggestions">
+      <p>Peut-être cherchiez-vous :</p>
+      <ul>
+        <li><a routerLink="/home">🏠 Page d'accueil</a></li>
+        <li><a routerLink="/suggestions">💡 Liste des suggestions</a></li>
+        <li><a routerLink="/users">👥 Utilisateurs</a></li>
+      </ul>
+    </div>
+    
+    <div class="error-actions">
+      <button class="btn btn-primary" (click)="goHome()">
+        <span class="btn-icon">🏠</span>
+        Retour à l'accueil
+      </button>
+      <button class="btn btn-secondary" onclick="history.back()">
+        <span class="btn-icon">⬅️</span>
+        Page précédente
+      </button>
+    </div>
+  </div>
+</div>

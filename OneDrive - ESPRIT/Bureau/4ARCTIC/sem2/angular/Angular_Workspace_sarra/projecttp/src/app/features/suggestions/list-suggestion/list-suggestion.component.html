@@ -1,0 +1,252 @@
+<div class="suggestions-container">
+  <div class="page-header">
+    <h1 class="page-title">Liste des suggestions</h1>
+  </div>
+<div class="suggestions-container">
+  <div class="page-header">
+    <h1 class="page-title">Liste des suggestions</h1>
+    <!-- BOUTON AJOUTER SUGGESTION -->
+    <button class="btn-add-suggestion" (click)="navigateToAddForm()">
+      <span class="btn-icon">➕</span>
+      <span>Ajouter une suggestion</span>
+    </button>
+  </div>
+  <!-- Boutons pour afficher favoris et refusées -->
+  <div class="filter-buttons">
+    <button 
+      class="filter-btn" 
+      [class.active]="showFavorites"
+      (click)="toggleFavorites()"
+    >
+      <span class="btn-icon">❤️</span>
+      <span>Mes Favoris ({{ favorites.length }})</span>
+    </button>
+    
+    <button 
+      class="filter-btn" 
+      [class.active]="showRefused"
+      (click)="toggleRefused()"
+    >
+      <span class="btn-icon">❌</span>
+      <span>Suggestions Refusées ({{ refusedSuggestions.length }})</span>
+    </button>
+  </div>
+
+  <!-- Barre de recherche -->
+  <div class="search-container">
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Rechercher une suggestion par titre ou catégorie..."
+        [(ngModel)]="searchTerm"
+      >
+    </div>
+  </div>
+
+  <!-- Liste des suggestions -->
+  <div class="suggestions-grid">
+    <div 
+      *ngFor="let suggestion of filteredSuggestions" 
+      class="suggestion-card"
+    >
+      <!-- En-tête de la carte -->
+      <div class="card-header">
+        <h2 class="card-title">{{ suggestion.title }}</h2>
+        <span class="category-badge">{{ suggestion.category }}</span>
+      </div>
+
+      <!-- Date -->
+      <div class="card-date">
+        <span class="date-icon">📅</span>
+        <span>{{ suggestion.date | date: 'dd MMM yyyy' }}</span>
+      </div>
+
+      <!-- Description -->
+      <p class="card-description">{{ suggestion.description }}</p>
+
+      <!-- Statut -->
+      <div class="card-status">
+        <span [class]="'status-badge ' + getStatusClass(suggestion.status)">
+          {{ getStatusText(suggestion.status) }}
+        </span>
+      </div>
+
+      <!-- Actions (boutons) -->
+      <div class="card-actions">
+        <!-- Boutons Like et Favoris uniquement si NON refusée -->
+        <ng-container *ngIf="suggestion.status !== 'refusee'">
+          <button 
+            class="btn btn-like" 
+            (click)="likeSuggestion(suggestion)"
+          >
+            <span class="btn-icon">👍</span>
+            <span class="btn-text">Like {{ suggestion.nbLikes }}</span>
+          </button>
+
+          <button 
+            class="btn btn-favorite" 
+            (click)="addToFavorites(suggestion)"
+          >
+            <span class="btn-icon">❤️</span>
+            <span class="btn-text">Ajouter aux favoris</span>
+          </button>
+        </ng-container>
+        
+        <!-- Bouton Détails TOUJOURS affiché -->
+        <button 
+          class="btn btn-details" 
+          [routerLink]="['/suggestions', suggestion.id]"
+        >
+          <span class="btn-icon">🔍</span>
+          <span class="btn-text">Détails</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message si aucune suggestion trouvée -->
+  <div *ngIf="filteredSuggestions.length === 0" class="no-results">
+    <p class="no-results-icon">🔍</p>
+    <p class="no-results-text">Aucune suggestion trouvée pour "{{ searchTerm }}"</p>
+  </div>
+
+  <!-- Section Favoris -->
+  <div *ngIf="showFavorites" class="favorites-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <span class="title-icon">❤️</span>
+        Mes Suggestions Favorites
+      </h2>
+      <button class="close-btn" (click)="toggleFavorites()">
+        ✕ Fermer
+      </button>
+    </div>
+
+    <div *ngIf="favorites.length === 0" class="empty-state">
+      <p class="empty-icon">💔</p>
+      <p class="empty-text">Vous n'avez pas encore de favoris</p>
+      <p class="empty-subtext">Cliquez sur "Ajouter aux favoris" pour sauvegarder vos suggestions préférées</p>
+    </div>
+
+    <div class="suggestions-grid" *ngIf="favorites.length > 0">
+      <div 
+        *ngFor="let suggestion of favorites" 
+        class="suggestion-card favorite-card"
+      >
+        <!-- En-tête de la carte -->
+        <div class="card-header">
+          <h2 class="card-title">{{ suggestion.title }}</h2>
+          <span class="category-badge">{{ suggestion.category }}</span>
+        </div>
+
+        <!-- Date -->
+        <div class="card-date">
+          <span class="date-icon">📅</span>
+          <span>{{ suggestion.date | date: 'dd MMM yyyy' }}</span>
+        </div>
+
+        <!-- Description -->
+        <p class="card-description">{{ suggestion.description }}</p>
+
+        <!-- Statut -->
+        <div class="card-status">
+          <span [class]="'status-badge ' + getStatusClass(suggestion.status)">
+            {{ getStatusText(suggestion.status) }}
+          </span>
+        </div>
+
+        <!-- Nombre de likes -->
+        <div class="likes-display">
+          <span class="likes-icon">👍</span>
+          <span class="likes-count">{{ suggestion.nbLikes }} likes</span>
+        </div>
+
+        <!-- Actions favoris -->
+        <div class="card-actions">
+          <button 
+            class="btn btn-remove" 
+            (click)="removeFromFavorites(suggestion)"
+          >
+            <span class="btn-icon">🗑️</span>
+            <span class="btn-text">Retirer des favoris</span>
+          </button>
+          
+          <button 
+            class="btn btn-details" 
+            [routerLink]="['/suggestions', suggestion.id]"
+          >
+            <span class="btn-icon">🔍</span>
+            <span class="btn-text">Détails</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Suggestions Refusées -->
+  <div *ngIf="showRefused" class="refused-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <span class="title-icon">❌</span>
+        Suggestions Refusées
+      </h2>
+      <button class="close-btn" (click)="toggleRefused()">
+        ✕ Fermer
+      </button>
+    </div>
+
+    <div *ngIf="refusedSuggestions.length === 0" class="empty-state">
+      <p class="empty-icon">✅</p>
+      <p class="empty-text">Aucune suggestion refusée</p>
+      <p class="empty-subtext">Toutes les suggestions sont acceptées ou en attente</p>
+    </div>
+
+    <div class="suggestions-grid" *ngIf="refusedSuggestions.length > 0">
+      <div 
+        *ngFor="let suggestion of refusedSuggestions" 
+        class="suggestion-card refused-card"
+      >
+        <!-- En-tête de la carte -->
+        <div class="card-header">
+          <h2 class="card-title">{{ suggestion.title }}</h2>
+          <span class="category-badge refused-badge">{{ suggestion.category }}</span>
+        </div>
+
+        <!-- Date -->
+        <div class="card-date">
+          <span class="date-icon">📅</span>
+          <span>{{ suggestion.date | date: 'dd MMM yyyy' }}</span>
+        </div>
+
+        <!-- Description -->
+        <p class="card-description">{{ suggestion.description }}</p>
+
+        <!-- Statut -->
+        <div class="card-status">
+          <span [class]="'status-badge ' + getStatusClass(suggestion.status)">
+            {{ getStatusText(suggestion.status) }}
+          </span>
+        </div>
+
+        <!-- Raison du refus -->
+        <div class="refusal-reason">
+          <p class="reason-title">Raison du refus :</p>
+          <p class="reason-text">Cette suggestion ne correspond pas aux priorités actuelles de l'organisation.</p>
+        </div>
+
+        <!-- Bouton Détails pour les refusées -->
+        <div class="card-actions">
+          <button 
+            class="btn btn-details" 
+            [routerLink]="['/suggestions', suggestion.id]"
+          >
+            <span class="btn-icon">🔍</span>
+            <span class="btn-text">Voir les détails</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
