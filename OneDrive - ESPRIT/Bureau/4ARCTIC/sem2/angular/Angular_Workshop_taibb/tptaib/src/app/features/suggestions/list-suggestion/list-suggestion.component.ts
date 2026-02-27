@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Suggestion } from '../../../models/suggestion';
 import { Router } from '@angular/router';
 import { SuggestionService } from '../../../services/suggestion.service';
@@ -8,22 +8,54 @@ import { SuggestionService } from '../../../services/suggestion.service';
   templateUrl: './list-suggestion.component.html',
   styleUrls: ['./list-suggestion.component.css']
 })
-export class ListSuggestionComponent {
+export class ListSuggestionComponent implements OnInit {
 
+  suggestions: Suggestion[] = [];
   favorites: Suggestion[] = [];
   searchText: string = '';
 
   constructor(
     private router: Router,
-    public suggestionService: SuggestionService
+    private suggestionService: SuggestionService
   ) {}
 
-  get suggestions(): Suggestion[] {
-    return this.suggestionService.getSuggestions();
+  ngOnInit(): void {
+    this.loadSuggestions();
+  }
+
+  loadSuggestions(): void {
+    this.suggestionService.getSuggestionsList().subscribe({
+      next: (data) => {
+        this.suggestions = data;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des suggestions', err);
+      }
+    });
   }
 
   incrementLikes(suggestion: Suggestion): void {
-    suggestion.nbLikes++;
+    this.suggestionService.incrementLikes(suggestion.id).subscribe({
+      next: (updatedSuggestion) => {
+        suggestion.nbLikes = updatedSuggestion.nbLikes;
+      },
+      error: (err) => {
+        console.error('Erreur lors de l\'incrémentation des likes', err);
+      }
+    });
+  }
+
+  deleteSuggestion(id: number): void {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette suggestion ?')) {
+      this.suggestionService.deleteSuggestion(id).subscribe({
+        next: () => {
+          this.loadSuggestions(); // Recharger la liste
+        },
+        error: (err) => {
+          console.error('Erreur lors de la suppression', err);
+        }
+      });
+    }
   }
 
   addToFavorites(suggestion: Suggestion): void {

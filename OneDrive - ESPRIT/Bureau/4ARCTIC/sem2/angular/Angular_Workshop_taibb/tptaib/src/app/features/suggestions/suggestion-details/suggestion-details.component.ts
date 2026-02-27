@@ -18,17 +18,23 @@ export class SuggestionDetailsComponent implements OnInit {
     private suggestionService: SuggestionService
   ) {}
 
-  ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      const id = +params['id'];
-      const found = this.suggestionService.getSuggestionById(id);
-      if (found) {
-        this.suggestion = found;
-      } else {
-        this.router.navigate(['/notfound']);
-      }
-    });
-  }
+ngOnInit(): void {
+  const id = +this.route.snapshot.params['id'];
+  this.suggestionService.getSuggestionById(id).subscribe({
+    next: (data) => {
+      console.log('Données reçues:', data);  // ← AJOUTER
+      this.suggestion = data;
+    },
+    error: (err) => {
+      console.error('Suggestion non trouvée', err);
+      this.router.navigate(['/notfound']);
+    }
+  });
+}
+
+goToUpdate(): void {
+  this.router.navigate(['/suggestions/edit', this.suggestion.id]);
+}
 
   backToList(): void {
     this.router.navigate(['/suggestions']);

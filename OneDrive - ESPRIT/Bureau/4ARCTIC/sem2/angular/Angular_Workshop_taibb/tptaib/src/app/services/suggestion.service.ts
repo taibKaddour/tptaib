@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Suggestion } from '../models/suggestion';
 
 @Injectable({
@@ -6,60 +9,47 @@ import { Suggestion } from '../models/suggestion';
 })
 export class SuggestionService {
 
-  suggestions: Suggestion[] = [
-    {
-      id: 1,
-      title: 'Organiser une journée team building',
-      description: 'Suggestion pour organiser une journée de team building pour renforcer les liens entre les membres de l\'équipe.',
-      category: 'Événements',
-      date: new Date('2025-01-20'),
-      status: 'acceptee',
-      nbLikes: 10
-    },
-    {
-      id: 2,
-      title: 'Améliorer le système de réservation',
-      description: 'Proposition pour améliorer la gestion des réservations en ligne avec un système de confirmation automatique.',
-      category: 'Technologie',
-      date: new Date('2025-01-15'),
-      status: 'refusee',
-      nbLikes: 0
-    },
-    {
-      id: 3,
-      title: 'Créer un système de récompenses',
-      description: 'Mise en place d\'un programme de récompenses pour motiver les employés et reconnaître leurs efforts.',
-      category: 'Ressources Humaines',
-      date: new Date('2025-01-25'),
-      status: 'refusee',
-      nbLikes: 0
-    },
-    {
-      id: 4,
-      title: 'Moderniser l\'interface utilisateur',
-      description: 'Refonte complète de l\'interface utilisateur pour une meilleure expérience utilisateur.',
-      category: 'Technologie',
-      date: new Date('2025-01-30'),
-      status: 'en_attente',
-      nbLikes: 0
-    }
-  ];
+  private suggestionUrl = 'http://localhost:3000/suggestions';
 
-  getSuggestions(): Suggestion[] {
-    return this.suggestions;
+  constructor(private http: HttpClient) {}
+
+  // GET - Récupérer toutes les suggestions
+  getSuggestionsList(): Observable<Suggestion[]> {
+    return this.http.get<any>(this.suggestionUrl).pipe(
+      map(response => response.suggestions || response)
+    );
   }
 
-  addSuggestion(suggestion: Suggestion): void {
-    this.suggestions.push(suggestion);
+  // GET - Récupérer une suggestion par ID
+  getSuggestionById(id: number): Observable<Suggestion> {
+    return this.http.get<any>(`${this.suggestionUrl}/${id}`).pipe(
+      map(response => response.suggestion || response)
+    );
   }
 
-  getNextId(): number {
-    return this.suggestions.length > 0
-      ? Math.max(...this.suggestions.map(s => s.id)) + 1
-      : 1;
+  // POST - Ajouter une nouvelle suggestion
+  addSuggestion(suggestion: Suggestion): Observable<Suggestion> {
+    return this.http.post<any>(this.suggestionUrl, suggestion).pipe(
+      map(response => response.suggestion || response)
+    );
   }
 
-  getSuggestionById(id: number): Suggestion | undefined {
-    return this.suggestions.find(s => s.id === id);
+  // PUT - Mettre à jour une suggestion
+  updateSuggestion(id: number, suggestion: Suggestion): Observable<Suggestion> {
+    return this.http.put<any>(`${this.suggestionUrl}/${id}`, suggestion).pipe(
+      map(response => response.suggestion || response)
+    );
+  }
+
+  // DELETE - Supprimer une suggestion
+  deleteSuggestion(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.suggestionUrl}/${id}`);
+  }
+
+  // POST - Incrémenter les likes
+  incrementLikes(id: number): Observable<Suggestion> {
+    return this.http.post<any>(`${this.suggestionUrl}/${id}/like`, {}).pipe(
+      map(response => response.suggestion || response)
+    );
   }
 }

@@ -1,47 +1,44 @@
 <div class="details-container" *ngIf="suggestion">
-  <div class="details-card">
-    <div class="details-header" [class]="getStatusClass(suggestion.status)">
-      <h1>{{ suggestion.title }}</h1>
-      <span class="status-badge">{{ getStatusLabel(suggestion.status) }}</span>
-    </div>
-
-    <div class="details-body">
-      <div class="info-section">
-        <h3>📝 Description</h3>
-        <p class="description">{{ suggestion.description }}</p>
-      </div>
-
-      <div class="meta-grid">
-        <div class="meta-item">
-          <span class="meta-label">📁 Catégorie</span>
-          <span class="meta-value">{{ suggestion.category }}</span>
-        </div>
-
-        <div class="meta-item">
-          <span class="meta-label">📅 Date</span>
-          <span class="meta-value">{{ suggestion.date | date:'dd/MM/yyyy' }}</span>
-        </div>
-
-        <div class="meta-item">
-          <span class="meta-label">❤️ Likes</span>
-          <span class="meta-value">{{ suggestion.nbLikes }}</span>
-        </div>
-
-        <div class="meta-item">
-          <span class="meta-label">🆔 ID</span>
-          <span class="meta-value">#{{ suggestion.id }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="details-footer">
-      <button class="btn-back" (click)="backToList()">
-        ← Retour à la liste
-      </button>
-    </div>
+  <h2>{{ suggestion.title }}</h2>
+  
+  <div class="detail-item">
+    <strong>Description :</strong>
+    <p>{{ suggestion.description }}</p>
+  </div>
+  
+  <div class="detail-item">
+    <strong>Catégorie :</strong>
+    <p>{{ suggestion.category }}</p>
+  </div>
+  
+  <div class="detail-item">
+    <strong>Date :</strong>
+    <p>{{ suggestion.date | date:'dd/MM/yyyy' }}</p>
+  </div>
+  
+  <div class="detail-item">
+    <strong>Status :</strong>
+    <span [class]="getStatusClass(suggestion.status)">
+      {{ getStatusLabel(suggestion.status) }}
+    </span>
+  </div>
+  
+  <div class="detail-item">
+    <strong>Nombre de likes :</strong>
+    <p>❤️ {{ suggestion.nbLikes }}</p>
+  </div>
+  
+  <div class="actions">
+    <button class="btn-update" (click)="goToUpdate()">
+      ✏️ Modifier
+    </button>
+    
+    <button class="btn-back" (click)="backToList()">
+      ⬅️ Retour
+    </button>
   </div>
 </div>
 
-<div class="details-container" *ngIf="!suggestion">
+<div *ngIf="!suggestion">
   <p>Chargement...</p>
 </div>
